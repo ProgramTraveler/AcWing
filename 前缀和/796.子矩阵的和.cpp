@@ -23,7 +23,7 @@ int main()
     {
         int x1, y1, x2, y2;
         scanf("%d%d%d%d", &x1, &y1, &x2, &y2);
-        printf("%d\n", s[x2][y2] - s[x1 - 1][y2] - s[x2][y1 - 1] + s[x1 - 1][y1 - 1]); //算部分和
+        printf("%d\n", s[x2][y2] - s[x1 - 1][y2] - s[x2][y1 - 1] + s[x1 - 1][y1 - 1]); //算部分和（子矩阵的和）
     }
 
     return 0;
