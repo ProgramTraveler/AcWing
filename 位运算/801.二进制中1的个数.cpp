@@ -1,20 +1,25 @@
-#include <iostream>
+#include<iostream>
 
 using namespace std;
 
-int main()
-{
+int lowbit(int x) {
+    return x&(- x);
+}
+
+int main() {
     int n;
-    scanf("%d", &n);
-    while (n -- )
-    {
-        int x, s = 0;
-        scanf("%d", &x);
+    cin>>n;
+    while (n --) {
+        int x;
 
-        for (int i = x; i; i -= i & -i) s ++ ;
+        cin>>x;
 
-        printf("%d ", s);
+        int res = 0;
+
+        while(x) x -= lowbit(x), res++;
+
+        cout<<res<<' ';
     }
-
+    
     return 0;
 }
