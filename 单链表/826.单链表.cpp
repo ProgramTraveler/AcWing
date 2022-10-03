@@ -50,6 +50,7 @@ int main () {
             add_to_head(x);
         } else if (op == 'D') {
             cin >> k;
+            if (!k) head = ne[head]; // 对头节点的一个特判
             remove(k - 1);
         } else {
             cin >> k >> x;
