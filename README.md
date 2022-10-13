@@ -404,5 +404,155 @@ int main () {
 }
 ```
 
+#### 第二章 数据结构(二)
 
+##### Trie数(字典树)
 
+```cpp
+#include <iostream>
+
+using namespace std;
+
+const int N = 100010;
+
+int son[N][26], cnt[N], idx; // son 是子节点 cnt 以当前这个字母结尾的单词有多个 idx 当前用到的下标 下标是 0 的点既是根节点 又是空节点 
+char str[N];
+
+// 插入操作
+void insert (char str[]) {
+    int p = 0; // 从根节点开始
+
+    for (int i = 0; str[i]; i ++) {
+        int u = str[i] - 'a';
+
+        if (!son[p][u]) { // 如果当前节点的子节点没有这个字母
+            son[p][u] = ++ idx;
+        }
+
+        p = son[p][u];
+    }
+
+    cnt[p] ++;
+}
+
+// 查询操作 
+int query (char str[]) { // 返回的是这个字符串出现多少次
+    int p = 0;
+
+    for (int i = 0; str[i]; i ++) {
+        int u = str[i] - 'a';
+
+        if (!son[p][u]) return 0;
+
+        p = son[p][u];
+    }
+
+    return cnt[p];
+}
+
+int main () {
+    int n;
+    
+    scanf("%d", &n);
+    while (n --) {
+        char op[2];
+        scanf("%s%s", op, str);
+
+        if (op[0] == 'I') insert(str);
+        else print("%d\n", query(str));
+    }
+
+    return 0;
+}
+```
+
+##### 并查集
+
+```cpp
+#include <iostream>
+
+using namespace std;
+
+const int N = 100010;
+
+int n, m;
+int p[N]; // 每个元素的父节点是谁
+
+int find (int x) { // 返回 x 所在集合的编号 x 的祖宗节点 + 路劲压缩
+    if (p[x] != x) p[x] = find(p[x]);
+    return p[x];
+}
+
+int main  () {
+    scanf("%d%d", &n ,&m);
+
+    for (int i = 1; i <= n; i ++) p[i] = i; // 初始的时候每个集合里只有一个元素 因此每个元素都是自己的父节点
+
+    while (m --) {
+        char op[2];
+        int a, b;
+
+        scanf("%s%d%d". op, &a, &b);
+
+        if (op[0] == 'M') p[find(a)] == find(b); // 合并集合
+        else {
+            if (find(a) == find(b)) puts("Yes");
+            else puts("No");
+        }
+
+    } 
+    return 0;
+}
+```
+
+##### 堆
+
+```cpp
+#include <iostream>
+#include <algorithm> // 导入额外的库
+
+using namespace std;
+
+const int N = 100010;
+
+int n , m;
+
+int h[N], size; // size 表示当前 h 有多少元素
+
+void down (int u) { // down 操作
+    int t = u;
+    if (u * 2 <= size && h[u * 2] < h[t]) t = u * 2;
+    if (u * 2 + 1 <= size && h[u * 2 + 1] < h[t]) t = u * 2 + 1;
+
+    if (u != t) { // 如果 u 不等于 t 说明根节点不是最小值
+        swap(h[u], h[t]); // 交换一下最小值 继续执行 down 操作
+        down(t);
+    }
+}
+
+void up (int u) { // up 操作
+    while (u / 2 && h[u / 2] > h[u]) {
+        swap(h[u / 2], h[u]);
+        u /= 2;
+    }
+}
+
+int main () {
+    scanf("%d", &n);
+    for (int i = 1; i <= n; i ++) scanf("%d", &h[i]);
+    size = n;
+
+    // 构建堆
+    for (int i = n / 2; i; i --) down(i);
+
+    while (m --) {
+        printf("%d", h[1]); // 输出堆顶元素
+        // 维护堆
+        h[1] = h[size];
+        size --;
+        down(1);
+    }
+
+    return 0;
+}
+```
