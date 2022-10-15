@@ -26,7 +26,7 @@ int main () {
 
     scanf("%d", &n);
 
-    memset(h, 0x3f, sizeof h); // 将数组清空
+    memset(h, 0x3f, sizeof h); // 将数组清空 按字节来的 memset 而不是按数
 
     while (n --) {
         char op[2];

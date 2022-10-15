@@ -42,6 +42,8 @@ int main() {
 }
 ```
 
+---
+
 ##### 归并排序
 
 ```cpp
@@ -92,6 +94,8 @@ int main() {
     return 0;
 }
 ```
+
+---
 
 #### 第二章数据结构(一)
 
@@ -166,6 +170,8 @@ int main () {
 }
 ```
 
+---
+
 ##### 双链表
 
 ```cpp
@@ -202,6 +208,8 @@ void remove (int k, int x) {
 }
 ```
 
+---
+
 ##### 模拟栈
 
 ```cpp
@@ -226,6 +234,8 @@ esle empty
 // 栈顶
 stk[tt];
 ```
+
+---
 
 ##### 模拟队列
 
@@ -254,6 +264,8 @@ else empty
 q[hh]
 ```
 
+---
+
 ###### -循环队列
 
 ```cpp
@@ -276,6 +288,8 @@ if (hh != tt) {
 
 }
 ```
+
+---
 
 ##### 单调栈
 
@@ -305,6 +319,8 @@ int main () {
     }
 }
 ```
+
+---
 
 ##### 单调队列
 
@@ -362,6 +378,8 @@ int main () {
 }
 ```
 
+---
+
 ##### KMP字符串
 
 ```cpp
@@ -403,6 +421,8 @@ int main () {
     }
 }
 ```
+
+---
 
 #### 第二章 数据结构(二)
 
@@ -466,6 +486,8 @@ int main () {
 }
 ```
 
+---
+
 ##### 并查集
 
 ```cpp
@@ -504,6 +526,8 @@ int main  () {
     return 0;
 }
 ```
+
+---
 
 ##### 堆
 
@@ -556,6 +580,8 @@ int main () {
     return 0;
 }
 ```
+
+---
 
 #### 数据结构(三)
 
@@ -614,6 +640,8 @@ int main () {
 }
 ```
 
+---
+
 ###### 开放寻址法
 
 ```cpp
@@ -645,7 +673,7 @@ int main () {
 
     scanf("%d", &n);
 
-    memset(h, 0x3f, sizeof h); // 将数组清空
+    memset(h, 0x3f, sizeof h); // 将数组清空 按字节来的 memset 而不是按数
 
     while (n --) {
         char op[2];
@@ -663,3 +691,51 @@ int main () {
     return 0;
 }
 ```
+
+---
+
+###### 字符串 hash(快速判断两个字符串是不是相等  O(1)的复杂度)
+
+```cpp
+#include <iostream>
+
+using namespace std;
+
+typedef unsigned long long ULL; // 用 ULL 来表示 unsigned long long
+
+const int N = 100010, P = 131; // P 常取 131 或者 13331
+
+int n, m;
+char str[N];
+ULL h[N], p[N]; // h 数组表示某一前缀的 hash 值 p 数组表示 p 进制
+
+ULL get (int l, int r) {
+    return h[r] - h[l - 1] * p[r - l + 1];
+} 
+
+
+int main () {
+    scanf("%d%d%s", &n, &m, str + 1);
+
+    p[0] = 1;
+
+    for (int i = 0; i <= n; i ++) {
+        p[i] = p[i + 1] * P;
+
+        h[i] = h[i - 1] * P + str[i];
+    }
+
+    while (m --) {
+        int l1, r1, l2, r2;
+
+        scanf("%d%d%d%d", &l1, &r1, &l2, &r2);
+        
+        if (get(l1, r1) == get(l2, r2)) puts("Yes");
+        else puts("No");
+    }
+    
+    return 0;
+} 
+```
+
+---
