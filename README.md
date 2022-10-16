@@ -746,17 +746,19 @@ int main () {
 
 * vector 变长数组 倍增的思想
 
-size()  -> 返回元素个数
+```cpp
+	size()  -> 返回元素个数
 
-empty()  -> 返回是否为空
+	empyt()  -> 返回是否为空
 
-clear()  -> 清空
+	clear()  -> 清空
 
-front() / back() -> 返回第一个数 / 返回最后一个数
+	front() / back() -> 返回第一个数 / 返回最后一个数
 
-push_back() / pop_back() -> 在最后插入一个数 / 把最后一个数删掉
+	push_back() / pop_back() -> 在最后插入一个数 / 把最后一个数删掉
 
-begin() / end() -> vector 的第 0 个数 / vector 的最后一个数的后面一个数
+	begin() / end() -> vector 的第 0 个数 / vector 的最后一个数的后面一个数
+```
 
 ```cpp
 #include <cstdio>
@@ -798,11 +800,13 @@ int main () {
 
 * pair<int, int> 存储一个二元组
 
-first -> 第一个元素
+```cpp
+	first -> 第一个元素
 
-second -> 第二个元素
+	second -> 第二个元素
 
-支持比较运算 也是按字典序 以 first 为第一关键字 以 second 为第二关键字 
+	支持比较运算 也是按字典序 以 first 为第一关键字 以 second 为第二关键字 
+```
 
 ```cpp
 #include <cstdio>
@@ -830,15 +834,17 @@ int main () {
 
 * string 字符串 
 
-substr() -> 返回某一个字串 
+```cpp
+	substr() -> 返回某一个字串 
 
-c_str() -> 返回 string 对应的字符数组的头指针
+	c_str() -> 返回 string 对应的字符数组的头指针
 
-size()
+	size()
 
-empty()
+	empty()
 
-clear()
+	clear()
+```
 
 ```cpp
 #include <cstdio>
@@ -869,17 +875,19 @@ int main () {
 
 * queue 队列
 
-push() -> 往队尾插入
+```cpp
+	push() -> 往队尾插入
 
-front() -> 返回队头元素
+	front() -> 返回队头元素
 
-back() -> 返回队尾元素
+	back() -> 返回队尾元素
 
-pop() -> 把队头弹出
+	pop() -> 把队头弹出	
 
-size()
+	size()
 
-empty()
+	empty()
+```
 
 ```cpp
 #include <cstdio>
@@ -898,20 +906,150 @@ int main () {
 }
 ```
 
-* priority_queue 优先队列(是一个堆) 
+* priority_queue 优先队列(是一个堆 默认是大根堆) 
+
+```cpp
 	push() -> 往堆里插入一个元素 
+
 	top() -> 返回堆顶 
-	pop() -> 把堆顶弹出/
+
+	pop() -> 把堆顶弹出
+```
+
+```cpp
+#include <cstdio>
+#include <cstring>
+#include <iostream>
+#include <algorithm>
+#include <queue>
+#include <vector>
+
+int main () {
+    priority_queue<int> heap; // 默认是大根堆
+
+    // 如果想是小根堆 那么插入负数 负数就是按从小到大排序
+    heap.push(-x);
+
+    // 如果想直接定义小根堆 定义的时候多加两个参数
+    priority_queue<int, vector<int>, greater<int>> heap;
+
+    return 0;
+}
+```
 
 * stack 
+
+```cpp
+	size()
+
+	empty()
+
 	push() -> 往栈顶添加一个元素 
+
 	top() -> 返回栈顶元素 
+
 	pop() -> 弹出栈顶元素
+```
+
+```cpp
+	和队列的操作差不多
+```
 
 * deque 双端队列
-	
+
+```cpp
+	size()
+
+	empty()
+
+	clear()
+
+	front() -> 返回第一个元素
+
+	back() -> 返回最后一个元素
+
+	push_back() / pop_back() -> 在最后插入一个元素 / 弹出最后一个元素
+
+	push_front() / pop_front() -> 在队首插入一个元素 / 弹出队首元素
+
+	begin() / end()
+
+	[]
+```
+
 * set map multiset multimap 基于平衡二叉树(红黑树) 动态维护有序数列
+
+```cpp	
+	size()
+	
+	empty()
+	
+	clear()
+	
+	begin() / end() -> ++ / -- 操作 返回前驱和后继  时间复杂度 O(logn)
+```
+
+* ** set / multiset
+
+```cpp
+	insert() -> 插入一个数
+	
+	find() -> 查找一个数
+	
+	count() -> 返回某一个数的个数
+	
+	erase() 有两种参数 
+		(1) 输入是一个数 x 删除所有 x O(k + logn) k 是 x 的个数 
+		(2) 输入是迭代器 删除这个迭代器
+		
+	lower_bound() / upper_bound() 最核心的两个操作
+		lower_bound(x) -> 返回大于等于 x 的最小的数的迭代器
+		upper_bound(x) -> 返回大于 x 的最小的数迭代器
+```
+* ** map / multimap 
+```cpp	
+	insert() -> 插入的数是一个 pair
+	
+	erase() -> 输入的参数是一个 pair 或者是迭代器
+	
+	find()
+	
+	[] 时间复杂度是 O(logn)
+	
+	lower_bound() / upper_bound()
+```
 
 * unordered_set unordered_map unordered_multiset unordered_multimap 没有顺序 基于 hash 表实现的
 
+```cpp
+	** 和上面类型 增删改查的时间复杂度是 O(1) 不支持 lower_bound() 和 upper_bound() 不支持迭代器的 ++ / -- 操作 和排序有关的操作都是不支持的**
+```
+
 * bitset 压位
+
+```cpp
+	bitset<10000> s; -> <> 里存的是个数
+
+	支持位运算操作
+	~s -> 取反
+
+	& | ^(异或) >> << == != 
+
+	[] -> 取出某一位
+
+	count() -> 返回有多少个 1
+
+	any() / none() -> 判断是否至少有一个 1 / 判断是否全为 0 
+
+​	set() -> 把所有位置改成 1
+
+​	set(k, v) -> 将第 k 位变成 v
+
+​	reset() -> 把所有变成 0
+
+​	flip() -> 把所有位取反 等价于 ~
+
+​	flip() -> 把第 k 位取反
+```
+
+---
