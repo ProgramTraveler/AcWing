@@ -1,8 +1,8 @@
-### 该库用来记录在 acwing 的代码模板
+# 该库用来记录在 acwing 的代码模板
 
-#### 
+##
 
-##### 快速排序
+### 快速排序
 
 ```cpp
 #include <iostream>
@@ -44,7 +44,7 @@ int main() {
 
 ---
 
-##### 归并排序
+### 归并排序
 
 ```cpp
 #include <iostream>
@@ -97,9 +97,9 @@ int main() {
 
 ---
 
-#### 第二章数据结构(一)
+## 第二章数据结构(一)
 
-##### 单链表
+### 单链表
 
 ```cpp
 #include <iostream>
@@ -172,7 +172,7 @@ int main () {
 
 ---
 
-##### 双链表
+### 双链表
 
 ```cpp
 #include <iostream>
@@ -210,7 +210,7 @@ void remove (int k, int x) {
 
 ---
 
-##### 模拟栈
+### 模拟栈
 
 ```cpp
 #include <iostream>
@@ -237,7 +237,7 @@ stk[tt];
 
 ---
 
-##### 模拟队列
+### 模拟队列
 
 ###### -普通队列
 
@@ -291,7 +291,7 @@ if (hh != tt) {
 
 ---
 
-##### 单调栈
+### 单调栈
 
 ```cpp
 #include <iostream>
@@ -322,7 +322,7 @@ int main () {
 
 ---
 
-##### 单调队列
+### 单调队列
 
 ```cpp
 #include <iostream>
@@ -380,7 +380,7 @@ int main () {
 
 ---
 
-##### KMP字符串
+### KMP字符串
 
 ```cpp
 #include <iostream>
@@ -424,9 +424,9 @@ int main () {
 
 ---
 
-#### 第二章 数据结构(二)
+## 第二章 数据结构(二)
 
-##### Trie数(字典树)
+### Trie数(字典树)
 
 ```cpp
 #include <iostream>
@@ -488,7 +488,7 @@ int main () {
 
 ---
 
-##### 并查集
+### 并查集
 
 ```cpp
 #include <iostream>
@@ -583,9 +583,9 @@ int main () {
 
 ---
 
-#### 数据结构(三)
+## 数据结构(三)
 
-##### hash表
+### hash表
 
 ###### 拉链法
 
@@ -739,3 +739,179 @@ int main () {
 ```
 
 ---
+
+### STL
+
+##### 常用的 STL
+
+* vector 变长数组 倍增的思想
+
+size()  -> 返回元素个数
+
+empty()  -> 返回是否为空
+
+clear()  -> 清空
+
+front() / back() -> 返回第一个数 / 返回最后一个数
+
+push_back() / pop_back() -> 在最后插入一个数 / 把最后一个数删掉
+
+begin() / end() -> vector 的第 0 个数 / vector 的最后一个数的后面一个数
+
+```cpp
+#include <cstdio>
+#include <cstring>
+#include <iostream>
+#include <algorithm>
+#include <vector>
+
+using namespace std;
+
+int main () {
+    vector<int> a;
+
+    for (int i = 0; i < 10; i ++) a.push_back(i);
+
+    for (int i = 0; i < a.size(); i ++) cout << a[i] << ' ';
+    cout << endl;
+
+    // vector 的迭代器来遍历
+    for (vector<int> :: iterator i = a.begin(); i != a.end(); i ++) cout << *i << ' '; // a.begin() 其实就是 a[0] a.end() 就是 a.size()
+    cout << endl;
+
+    for (auto i = a.begin(); i != a.end(); i ++) // 也可以把上一个这样写
+
+    for (auto x : a) cout << x << ' ';
+    cout << endl;
+
+    // 支持比较运算
+
+    vector<int> a(4, 3) b(3, 4);
+
+    if (a < b) { // 可以比较 vector 之间的大小 按字典序来比
+
+    }
+
+    return 0;
+}
+```
+
+* pair<int, int> 存储一个二元组
+
+first -> 第一个元素
+
+second -> 第二个元素
+
+支持比较运算 也是按字典序 以 first 为第一关键字 以 second 为第二关键字 
+
+```cpp
+#include <cstdio>
+#include <cstring>
+#include <iostream>
+#include <algorithm>
+
+using namespace std;
+
+int main () {
+    pair<int, string> p;
+
+    // 初始化 pair 的两种方式
+    // 第一种方式
+    p = make_pair(10, "wjm");
+    //第二种方式
+    p = {20, "wjm"};
+
+    // 也可以用 pair 存储三个属性
+    pair<int, pair<int, int>> p;
+    
+    return 0;
+}
+```
+
+* string 字符串 
+
+substr() -> 返回某一个字串 
+
+c_str() -> 返回 string 对应的字符数组的头指针
+
+size()
+
+empty()
+
+clear()
+
+```cpp
+#include <cstdio>
+#include <cstring>
+#include <iostream>
+#include <algorithm>
+
+using namespace std;
+
+int main () {
+    string a = "wjm";
+
+    // 在字符串后面添加字符
+    a += "def";
+    a += "c";
+
+    cout << a << endl;
+
+    cout << a.substr(1, 2) << endl; // 第一个参数是字串的起始位置 第二个参数是字串的长度 当长度超过字符串长度时 输出到末尾为止
+    cout << a.substr(1) << endl; // 把第二个参数省略掉 就会返回从 1 开始的整个字符串
+
+    printf("%s\n", a.c_str()) // 这样也可以输出整个字符串
+
+    return 0;
+
+}
+```
+
+* queue 队列
+
+push() -> 往队尾插入
+
+front() -> 返回队头元素
+
+back() -> 返回队尾元素
+
+pop() -> 把队头弹出
+
+size()
+
+empty()
+
+```cpp
+#include <cstdio>
+#include <cstring>
+#include <iostream>
+#include <algorithm>
+#include <queue>
+
+using namespace std;
+
+int main () {
+    queue<int> q;
+
+    // 如果想要清空 queue 那么重新构造一个就可以了
+    q = queue<int>();
+}
+```
+
+* priority_queue 优先队列(是一个堆) 
+	push() -> 往堆里插入一个元素 
+	top() -> 返回堆顶 
+	pop() -> 把堆顶弹出/
+
+* stack 
+	push() -> 往栈顶添加一个元素 
+	top() -> 返回栈顶元素 
+	pop() -> 弹出栈顶元素
+
+* deque 双端队列
+	
+* set map multiset multimap 基于平衡二叉树(红黑树) 动态维护有序数列
+
+* unordered_set unordered_map unordered_multiset unordered_multimap 没有顺序 基于 hash 表实现的
+
+* bitset 压位
