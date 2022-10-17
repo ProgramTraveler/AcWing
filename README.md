@@ -787,7 +787,6 @@ int main () {
     cout << endl;
 
     // 支持比较运算
-
     vector<int> a(4, 3) b(3, 4);
 
     if (a < b) { // 可以比较 vector 之间的大小 按字典序来比
@@ -1041,15 +1040,127 @@ int main () {
 
 	any() / none() -> 判断是否至少有一个 1 / 判断是否全为 0 
 
-​	set() -> 把所有位置改成 1
+	set() -> 把所有位置改成 1
 
-​	set(k, v) -> 将第 k 位变成 v
+	set(k, v) -> 将第 k 位变成 v
 
-​	reset() -> 把所有变成 0
+	reset() -> 把所有变成 0
 
-​	flip() -> 把所有位取反 等价于 ~
+	flip() -> 把所有位取反 等价于 ~
 
-​	flip() -> 把第 k 位取反
+	flip() -> 把第 k 位取反
 ```
 
 ---
+
+## 搜索与图论(一)
+
+### DFS
+
+```cpp
+#include <iostream>
+
+using namespace std;
+
+const int N = 20;
+
+int n;
+
+int path[N];
+
+char g[N][N];
+
+bool col[n], dg[N], udg[N]; // 行 正对角线 反对角线
+
+void dfs (int u) {
+    if (u == n) { // 说明已经找到一组方案
+        for (int i = 0; i < n; i ++) puts(g[i]);
+        puts("");
+        return ;
+    }
+
+    for (int i = 0; i < n; i ++) {
+        if (!col[i] && !dg[u + i] && !udg[n - u + i]) {
+            g[u][i] = 'Q';
+            col[i] = dg[u + i] = udg[n - u + i] = true; // 表示放置在该位置
+            
+            dfs(i + 1);
+
+            // 恢复现场
+            col[i] = dg[u + i] = udg[n - u + i] = false;
+            g[u][i] = '.';
+        }
+    }
+
+}
+
+int main () {
+    cin >> n;
+
+    dfs(0);
+
+    return 0;
+}
+```
+
+### BFS
+
+```cpp
+#include <iostream>
+#include <algorithm>
+#include <queue>
+#include <cstring>
+
+// bfs 解决最短路问题前提是路径权重都是一样的
+
+using namespace std;
+
+typedef pair<int, int> PII;
+
+
+int n, m;
+
+int g[N][N]; // 存的是迷宫地图 
+
+int d[N][N]; // 每一个点到起点的距离
+
+PII q[N * N];
+
+int bfs () {
+    int hh = 0, tt = 0; // 队头和队尾
+    q[0] = {0, 0};
+
+    memset(d, -1, sizeof d);
+
+    d[0][0] = 0;
+
+    int dx[4] = {-1, 0, 1, 0}, dy[4] = {0, 1, 0, -1}; // 表示四个方向
+    while (hh <= tt) { // 队列不空
+        auto t = q[hh] ++;
+
+        for (int i = 0; i < 4; i ++) {
+            int x = t.first + dx[i], y = t.second + dy[i];
+
+            if (x >= 0 && x < n && y >= 0 && y < m && g[x][y] == 0 && d[x][y] == -1) { // 当前点可以走
+                d[x][y] = d[t.first][t.second] + 1;
+                q[ ++ t] = {x, y};
+            }
+        }
+    }
+
+    return d[n - 1][m - 1];
+}
+
+int main () {
+    cin >> n >> m;
+
+    for (int i = 0; i < n; i ++) {
+        for (int j = 0; j < m; j ++) {
+            cin >> g[i][j];
+        }
+    }
+
+    cout << bfs() << endl;
+}
+```
+
