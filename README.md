@@ -97,7 +97,7 @@ int main() {
 
 ---
 
-## 第二章数据结构(一)
+## 第二章 数据结构(一)
 
 ### 单链表
 
@@ -583,11 +583,11 @@ int main () {
 
 ---
 
-## 数据结构(三)
+## 第二章 数据结构(三)
 
 ### hash表
 
-###### 拉链法
+#### 拉链法
 
 ```cpp
 #include <iostream>
@@ -642,7 +642,7 @@ int main () {
 
 ---
 
-###### 开放寻址法
+#### 开放寻址法
 
 ```cpp
 #include <iostream>
@@ -694,7 +694,7 @@ int main () {
 
 ---
 
-###### 字符串 hash(快速判断两个字符串是不是相等  O(1)的复杂度)
+#### 字符串 hash(快速判断两个字符串是不是相等  O(1)的复杂度)
 
 ```cpp
 #include <iostream>
@@ -742,7 +742,7 @@ int main () {
 
 ### STL
 
-##### 常用的 STL
+#### 常用的 STL
 
 * vector 变长数组 倍增的思想
 
@@ -1053,7 +1053,7 @@ int main () {
 
 ---
 
-## 搜索与图论(一)
+## 第三章 搜索与图论(一)
 
 ### DFS
 
@@ -1102,6 +1102,8 @@ int main () {
     return 0;
 }
 ```
+
+---
 
 ### BFS
 
@@ -1164,6 +1166,8 @@ int main () {
 }
 ```
 
+---
+
 ### 图的存储(邻接表)
 
 ```cpp
@@ -1188,6 +1192,8 @@ int main () {
     return 0;
 }
 ```
+
+---
 
 ### 树和图的遍历
 
@@ -1229,6 +1235,8 @@ int main () {
     return 0;
 }
 ```
+
+---
 
 #### BFS
 
@@ -1293,6 +1301,8 @@ int main () {
     return 0;
 }
 ```
+
+---
 
 #### 有向图的拓扑序(宽度优先搜索的运用)
 
@@ -1359,4 +1369,741 @@ int main () {
 }
 ```
 
+---
+
+## 第三章 搜索与图论(二)
+
+### 最短路
+
+#### 朴素 Dijkstra 算法 时间复杂是 O(n2+m)O(n2+m) nn 表示点数，mm 表示边数
+
+```cpp
+#include <iostream>
+#include <cstring>
+#include <algorithm>
+
+using namespace std;
+
+const int N = 510;
+
+int n, m;
+int g[N][N];
+int dist[N]; // dist 表示当前的最短路是多少
+bool st[N]; // 哪个点已经是确定的
+
+
+int dijkstra () {
+    memset(dist, 0x3f, sizeof dist); // 将所有距离初始化为正无穷
+
+    dist[1] = 0;
+
+    for (int i = 0; i < n; i ++) {
+        int t = -1;
+
+        for (int j = 1; j <= n; j ++) {
+            if (!st[j] && (t != -1 || dist[t] > dist[j]))
+                t = j;
+        }
+        st[t] = true;
+
+        for (int j = 1; j <= n; j ++) {
+             dist[j] = min(dist[j], dist[t] + g[t][j]);
+        }
+    }
+
+    if (dist[n] == 0x3f3f3f3f) return -1;
+    else return dist[n];
+}
+
+int main () {
+    scanf("%d%d", &n, &m);
+
+    // 对图的初始化
+    for (int i = 0; i <= n; i ++)
+        for (int j = 0; i <= n; j ++)
+            if (i == j) g[i][j] = 0;
+            esle g[i][j] = INT;
+
+    while (m --) {
+        int a, b, c;
+
+        scanf("%d%d%d", &a, &b, &c);
+        g[a][b] = min(g[a][b], c); // 处理题目中的重边 每次保留最短的那条边
+    }
+        
+    int t = dijkstra();
+
+    printf("%d\n", t);
+
+    return 0;
+}
+```
+
+---
+
+#### 堆优化版 Dijkstra 算法 时间复杂度 O(mlogn)O(mlogn) n 表示点数，m 表示边数
+
+```cpp
+#include <iostream>
+#include <cstring>
+#include <algorithm>
+#include <queue>
+
+using namespace std;
+
+typedef pair<int, int> PII;
+
+const int N = 100010;
+
+int n, m;
+int h[N], e[N], ne[N], w[N]; // w 记录的是权重
+int dist[N]; // dist 表示当前的最短路是多少
+bool st[N]; // 哪个点已经是确定的
+
+int add (int a, int b, int c) {
+    e[idx] = b, w[idx] = c, ne[idx] = h[a], h[a] = idx ++; 
+}
+
+int dijkstra () {
+    memset(dist, 0x3f, sizeof dist); // 将所有距离初始化为正无穷
+
+    dist[1] = 0;
+
+    priority_queue<PII, vector<PII>, greater<PII>> heap;
+    heap.push({0, 1});
+
+    while (heap.size()) { // 堆不空
+        auto t = heap.top();
+        heap.pop();
+
+        int ver = t.second(), distance = t.first();
+        if (st[ver]) continue;
+
+        for (int i = h[ver]; i != -1; i = ne[i]) {
+            int j = e[i];
+
+            if (dist[j] > distance + w[j]) {
+                dist[j] = distance + w[j];
+                heap.push({dist[j], j});
+            }
+        }
+    }
+
+
+    if (dist[n] == 0x3f3f3f3f) return -1;
+    else return dist[n];
+}
+
+int main () {
+    scanf("%d%d", &n, &m);
+
+    // 对图的初始化
+    memset(h, -1, sizeof h); // 邻接表的初始化
+
+    while (m --) {
+        int a, b, c;
+
+        scanf("%d%d%d", &a, &b, &c);
+        add(a, b, c);
+    }
+        
+    int t = dijkstra();
+
+    printf("%d\n", t);
+
+    return 0;
+}
+```
+
+---
+
+#### Bellman-Ford 算法 适合变数有限制的最短路径 时间复杂度 O(nm) n 表示点数，m 表示边数
+
+```cpp
+#include <iostream>
+#include <cstring>
+#include <algorithm>
+
+using namespace std;
+
+int N = 510, M = 10010;
+
+int n, m;
+int dist[N], bakcup[N]; // dist 表示距离
+
+struct Edge {
+    int a, b , w;
+} edge[M];
+
+int bellman_ford () {
+    // 初始化
+    memset(dist, 0x3f, sizeof dist);
+    dist[1] = 0;
+
+    for (int i = 0; i < k; i ++) { // 不超过 k 条边 所以迭代 k 次
+        memcpy(bakcup, dist, sizeof dist); // 做一个备份
+
+        for (int j = 0; j < m; j ++) {
+            int a = edge[j].a, b = edge[j].b, w = edge[j].w;
+            dist[b] = min(dist[b], bakcup[a] + w);
+        } 
+    }
+
+    if (dist[n] > 0x3f3f3f3f / 2) return -1; // 如果 dist[N] 大于一个比较大的数 返回 -1
+
+    return dist[n];
+}
+
+int main () {
+    scanf("%d%d%d", &n ,&m, &k);
+
+    for (int i = 0; i < m; i ++) { // 读入每条边
+        int a, b, w;
+        scanf("%d%d%d", &a, &b, &w);
+        edge[i] = {a, b, w};
+    }
+
+    int t = bellman_ford();
+
+    if (t == -1) { // 说明最短路不存在
+        puts("impossible");
+    } else printf("%d\n", t);
+
+    return 0;
+}
+```
+
+---
+
+#### Spfa 算法 (队列优化的 Bellman-Ford 算法) 时间复杂度 平均情况下 O(m) 最坏情况下 O(nm) n 表示点数 m 表示边数
+
+```cpp
+#include <iostream>
+#include <cstring>
+#include <algorithm>
+#include <queue>
+
+using namespace std;
+
+typedef pair<int, int> PII;
+
+const int N = 100010;
+
+int n, m;
+int h[N], e[N], ne[N], w[N]; // w 记录的是权重
+int dist[N]; // dist 表示当前的最短路是多少
+bool st[N]; // 哪个点已经是确定的
+
+int add (int a, int b, int c) {
+    e[idx] = b, w[idx] = c, ne[idx] = h[a], h[a] = idx ++; 
+}
+
+int spfa () {
+    memset(dist, 0x3f, sizeof dist);
+    dist[1] = 0;
+
+    queue<int> q;
+    queue.push(1);
+    st[1] = true; // 当前这个点是不是在队列当中
+
+    while (q.size()) {
+        int t = q.front();
+        q.pop();
+        st[t] = false;
+
+        for (int i = h[t]; i != -1; i = ne[i]) { // 更新 t 的所有领边
+            int j = e[i]
+
+            if (dist[j] > dist[t] + w[i]) {
+                dist[j] = dist[t] + w[i];
+
+                if (!st[j]) {
+                    q.push(j);
+                    st[j] = true;
+                }
+            }
+        }
+    }
+
+    if (dist[n] == 0x3f3f3f3f) return -1;
+    else return dist[n];
+}
+
+int main () {
+    scanf("%d%d", &n, &m);
+
+    // 对图的初始化
+    memset(h, -1, sizeof h); // 邻接表的初始化
+
+    while (m --) {
+        int a, b, c;
+
+        scanf("%d%d%d", &a, &b, &c);
+        add(a, b, c);
+    }
+        
+    int t = spfa();
+
+    if (t == -1) puts("impossible");
+    else printf("%d\n", t);
+
+    return 0;
+}
+```
+
+---
+
+#### Spfa 算法 判断图中是否存在负环 时间复杂度是 O(nm) n 表示点数 m 表示边数
+
+```cpp
+#include <iostream>
+#include <cstring>
+#include <algorithm>
+#include <queue>
+
+using namespace std;
+
+typedef pair<int, int> PII;
+
+const int N = 100010;
+
+int n, m;
+int h[N], e[N], ne[N], w[N]; // w 记录的是权重
+int dist[N], cnt[N]; // dist[x] 存储 1 号点到 x 的最短距离 cnt[x] 存储 1 到 x 的最短路中经过的点数
+bool st[N]; // 哪个点已经是确定的
+
+int add (int a, int b, int c) {
+    e[idx] = b, w[idx] = c, ne[idx] = h[a], h[a] = idx ++; 
+}
+
+bool spfa () {
+    // 不需要初始化 dist 数组
+    // 原理：如果某条最短路径上有 n 个点(除了自己) 那么加上自己之后一共有 n + 1 个点，由抽屉原理一定有两个点相同 所以存在环。
+    
+    queue<int> q;
+    for (int i = 1; i <= n; i ++ ) {
+        q.push(i);
+        st[i] = true;
+    }
+
+    while (q.size()) {
+        int t = q.front();
+        q.pop();
+        st[t] = false;
+
+        for (int i = h[t]; i != -1; i = ne[i]) { // 更新 t 的所有领边
+            int j = e[i]
+
+            if (dist[j] > dist[t] + w[i]) {
+                dist[j] = dist[t] + w[i];
+                cnt[j] = cnt[t] + 1;
+
+                if (cnt[j] >= n) return true;
+
+                if (!st[j]) {
+                    q.push(j);
+                    st[j] = true;
+                }
+            }
+        }
+    }
+
+    return false;
+}
+
+int main () {
+    scanf("%d%d", &n, &m);
+
+    // 对图的初始化
+    memset(h, -1, sizeof h); // 邻接表的初始化
+
+    while (m --) {
+        int a, b, c;
+
+        scanf("%d%d%d", &a, &b, &c);
+        add(a, b, c);
+    }
+        
+    if (spfa()) puts("Yes");
+    else puts("No");
+
+    return 0;
+}
+```
+
+---
+
+#### Floyd 算法 求多源汇最短路 时间复杂度是 O(n3) n 表示点数
+
+```cpp
+#include <iostream>
+#include <cstring>
+#include <algorithm>
+
+using namespace std;
+
+const int N = 210, INF = 1e9;
+
+int n, m, Q; // Q 表示的是询问个数
+
+int d[N][N];
+
+void floyd () {
+    for (int k = 1; k <= n; k ++ ) {
+        for (int i = 1; i <= n; i ++) {
+            for (int j = 1; j <= n; j ++) {
+                d[i][j] = min(d[i][j], d[i][k] + d[k][j]);
+            }
+        }
+    }
+}
+
+int main () {
+    scanf("%d%d%d", &n, &m, &Q);
+
+    // 初始化
+    for (int i = 1; i <= n; i ++) {
+        for (int j = 1; j <= n; j ++) {
+            if (i == j) d[i][j] = 0;
+            else d[i][j] = INF;
+        }
+    }
+
+    while (m --) {
+        int a, b, w;
+
+        scanf("%d%d%d", &a, &b, &w);
+
+        d[a][b] = min(d[a][b], w);
+    }
+
+    floyd();
+
+    while (Q --) {
+        int a, b;
+
+        scanf("%d%d", &a, &b);
+
+        if (d[a][b] > INF / 2) puts("impossible");
+        else printf("%d\n", d[a][b]);
+    }
+
+    return 0;
+}
+```
+
+---
+
+## 第三章 搜索与图论(三)
+
+### 最小生成树
+
+#### 朴素版的普利姆算法(prime) 适合稠密图 时间复杂度是 O(n2+m) n 表示点数 m 表示边数
+
+```cpp
+#include <iostream>
+#include <cstring>
+#include <algorithm>
+
+using namespace std;
+
+const int N = 510, INF = 0x3f3f3f3f;
+
+int n, m;
+int g[N][N];
+int dist[N];
+bool st[N];
+
+int prime () {
+    memset(dist, 0x3f, sizeof dist);
+
+    int res = 0; // 最小生成树的所有边的长度之和
+    for (int i = 0; i < n; i ++) {
+        int t = -1;
+
+        for (int j = 1; j <= n; j ++) {
+            if (!st[j] && (t == -1 || dist[t] > dist[j])) {
+                t = j;
+            }
+        }
+
+        if (i && dist[t] == INF) return INF;
+        if (i) res += dist[t]; // 只要不是第一个点
+
+        for (int j = 1; j <= n; j ++) { // 更新一下其他点到这个集合的距离
+            dist[j] = min(dist[j], g[t][j]);
+        }
+
+        st[t] = true;
+    }
+
+    return res;
+}
+
+int main () {
+    scanf("%d%d", &n, &m);
+
+    memset(g, 0x3f, sizeof g);
+
+    while (m --) { // 输入所有边
+        int a, b, c;
+
+        scanf("%d%d%d", &a, &b, &c);
+
+        g[a][b] = g[b][a] = min(g[a][b], c);         
+    }
+
+    int t = prime();
+    
+    if (t == INF) puts("No");
+    else printf("%d\n", t);
+
+    return 0;
+}
+```
+
+---
+
+#### 堆优化的 Prime 算法 适合稀疏图 时间复杂度是 O(mlogn) n 表示点数 m 表示边数
+
+#### 克鲁斯卡尔算法(Kruskal) 适合稀疏图 时间复杂度是 O(mlogm) n 表示点数 m 表示边数
+
+```cpp
+#include <iostream>
+#include <algorith>
+
+using namespace std;
+
+const int N = 200010;
+
+int n, m;
+int p[N];
+
+struct Edge {
+    int a, b, w;
+
+    bool operator < (const Edge &W) const { // 运算符重载 方便排序 按权重来排序
+        return w < W.w
+    }
+} edges[N];
+
+int find (int x) {
+    if (p[x] != x) p[x] = find(p[x]);
+
+    return p[x];
+} 
+
+int main () {
+    scanf("%d%d", &n, &m);
+
+    for (int i = 0; i < m; i ++) {
+        int a, b, w;
+
+        scanf("%d%d%d", &a, &b, &w);
+        edges[i] = {a, b, w};
+    }
+
+    sort(edges, edges + m); // 把所有边排序
+
+    for (int i = 0; i <= n; i ++) { // 初始化所有的并查集
+        p[i] = i;
+    }
+
+    int res = 0, cnt = 0;
+    for (int i = 0; i < m;  i ++) { // 从小到大枚举所有边
+        int a = edges[i].a, b = edges[i].b, w = edges[i].w;
+
+        a = find(a), b = find(b); // 祖宗节点
+
+        if (a != b) { // 判断一下两个点是不是连通的
+            p[a] = b; // 两个集合合并
+
+            // 如果不是连通的 就把这条边加进来
+            res += w; // res 存的是最小生成树的所有权重之和
+
+            cnt ++; // 存的是边数之和
+        }
+    }
+
+    if (cnt < n -1) { // 说明图是不连通的
+        puts("impossible");
+    } else printf("%d\n", res);
+
+    return 0;
+}
+
+/*
+int kruskal() {
+    sort(edges, edges + m);
+
+    for (int i = 1; i <= n; i ++) p[i] = i; // 初始化并查集
+
+    int res = 0, cnt = 0;
+    for (int i = 0; i < m; i ++) {
+        int a = edges[i].a, b = edges[i].b, w = edges[i].w;
+
+        a = find(a), b = find(b);
+        if (a != b) { // 如果两个连通块不连通，则将这两个连通块合并
+            p[a] = b;
+            res += w;
+            cnt ++ ;
+        }
+    }
+
+    if (cnt < n - 1) return INF;
+    return res;
+}
+*/
+```
+
+---
+
+### 二分图
+
+#### 染色法 时间复杂度是 O(n+m) n 表示点数 m 表示边数
+
+```cpp
+#include <iostream>
+#include <cstring>
+#include <algorithm>
+
+using namespace std;
+
+const int N = 100010, M = 200010;
+
+int n, m;
+int h[N], e[M], ne[M], idx; // 邻接表存储图
+int color[N]; // 表示每个点的颜色 -1表示未染色 0表示白色 1表示黑色
+
+void add (int a, int b) {
+    e[idx] = b, ne[idx] = h[a], h[a] = idx ++;
+}
+
+bool dfs (int u, int c) { // u表示当前节点 c表示当前点的颜色
+    color[u] = c;
+
+    for (int i = h[u]; i != -1; i = ne[i]) {
+        int j = e[i];
+        if (!color[j]) { // 如果当前这个点没有被染颜色
+            if (!dfs(j, 3 - c)) { // 3 - c 可以把 1 变成 2 把 2 变成 1
+                return false;
+            } else if (color[j] == c) { // 如果已经染过颜色了 而且和当前颜色有矛盾
+                return false;
+            }
+        }
+    }
+
+    return true;
+}
+
+int main () {
+    scanf("%d%d", &n, &m);
+
+    memset(h, -1, sizeof h);
+
+    while (m --) {
+        int a, b;
+
+        scanf("%d%d", &a, &b);
+
+        add(a, b), add(b, a);
+    }
+
+    // 开始染色
+    bool flag = true; // 染的时候是否有矛盾发生
+    for (int i = 0; i <= n; i ++ ) {
+        if (!color[i]) { // 如果当前这个点没有被染色的话
+            if (!dfs(i, 1)) { // 如果有矛盾发生 
+                flag = false;
+                break;
+            }
+        }
+    }
+
+    if (flag) puts("Yes");
+    else puts("No");
+
+    return 0;
+}
+
+/*
+bool check () {
+    memset(color, -1, sizeof color);
+    bool flag = true;
+    for (int i = 1; i <= n; i ++)
+        if (color[i] == -1)
+            if (!dfs(i, 0)) {
+                flag = false;
+                break;
+            }
+    return flag;
+}
+*/
+```
+
+---
+
+#### 匈牙利算法 时间复杂度是 O(mn) 实际运行时间远小于 O(mn)
+
+```cpp
+#include <iostream>
+#include <algorithm>
+#include <cstring>
+
+using namespace std;
+
+const int N = 510, M = 1000010;
+
+int n1, n2, m;
+int h[N], e[M], ne[M], idx; // 邻接表
+int match[N]; // 存储第二个集合中的每个点当前匹配的第一个集合中的点是哪个
+bool st[N]; // 表示第二个集合中的每个点是否已经被遍历过
+
+void add (int a, int b) {
+    e[idx] = b, ne[idx] = h[a], h[a] = idx ++;
+}
+
+bool find (int x) {
+    for (int i = h[x]; i != -1; i = ne[i]) {
+        int j = e[i];
+        if (!st[j]) { // 如果没有考虑过
+            st[j] = true;
+            
+            if (match[j] == 0 || find(match[j])) {
+                match[j] = x;
+                return true;
+            }
+        }
+    }
+
+    return false;
+}
+
+int main () {
+    scanf("%d%d%d", &n1, &n2, &m);
+
+    memset(h, -1, sizeof h);
+
+    while (m --) {
+        int a, b;
+
+        scanf("%d%d", &a, &b);
+        add(a, b);
+    }
+    
+    int res = 0; // 当前匹配的数量
+    for (int i = 1; i <= n1; i ++) {
+        memset(st, false, sizeof st);
+
+        if (find(i)) res ++;
+        else 
+    }
+
+    printf("%d\n", res);
+
+    return 0;
+}
+```
+
+---
 
