@@ -2107,3 +2107,228 @@ int main () {
 
 ---
 
+## 第四章 数学知识(一)
+
+### 数论
+
+#### 试除法 时间复杂度 O(n) 优化后为 O(sqrt(n))
+
+```cpp
+#include <iostream>
+#include <algorihtm>
+
+using namespace std;
+
+bool is_prime (int n) { // 判断是否为质数
+    if (n < 2) return false;
+
+    /*for (int i = 2; i < n; i ++) 
+        if (n % i == 0) return false;*/
+
+    // 对上面的算法进行优化
+    for (int i = 2; i <= n / i; i ++)
+        if (n % i == 0) return false
+        
+    return true; 
+}
+
+int main () {
+
+}
+```
+
+---
+
+#### 分解质因数 也是试除法
+
+```cpp
+#include <iostream>
+#include <algorithm>
+
+using namespace std;
+
+void divide (int n) {
+    /*for (int i = 2; i <= n; i ++)  // 从小到大枚举 n 的所有质因数
+        if (n % i == 0) { // i 一定是质数
+            int s = 0;
+            while (n % i == 0) {
+                n /= i;
+                s ++; 
+            }
+
+            printf("%d%d\n", i, s);
+        }*/
+
+    for (int i =  2; i <= n / i; i ++) {
+        if (n % i == 0) { // i 一定是质数
+            int s = 0;
+            while (n % i == 0) {
+                n /= i;
+                s ++; 
+            }
+
+            printf("%d%d\n", i, s);
+        }
+    }
+    if (n > 1) printf("%d%d\n", n, 1);
+    puts("");
+}
+
+int main () {
+    int n;
+
+    scanf("%d", &n);
+
+    while (n --) {
+        int x;
+        scanf("%d", &x);
+        divide(x);
+    }
+
+    return 0;
+}
+```
+
+---
+
+#### 筛质数 埃式筛法
+
+```cpp
+#include <iostream>
+#include <algorithm>
+
+using namespace std;
+
+const int N = 100010;
+
+int primes[N], cnt;
+bool st[N];
+
+void get_primes (int n) {
+    for (int i = 2; i <= n; i ++) {
+        if (!st[i]) { // 如果没有被筛过的话说明是一个质数
+            primes[cnt ++] = n;
+            
+            for (int j = i + 1; j <= n; j += i) { // 再把每个数的倍数删掉
+                st[j] = true;
+            }
+        }
+    }
+}
+
+int main () {
+    int n;
+
+    cin >> n;
+
+    get_primes(n);
+
+    cout << cnt << endl;
+
+    return 0;
+}
+```
+
+---
+
+#### 线性筛法求质数 n 只会被最小质因子筛掉
+
+```cpp
+#include <iostream>
+#include <algorithm>
+
+using namespace std;
+
+const int N = 100010;
+
+int primes[N], cnt;
+bool st[N];
+
+void get_primes (int n) {
+    for (int i = 2; i <= n; i ++) {
+        if (!st[i]) primes[cnt ++] = i; // 如果不是质数的话就添加到列表中
+
+        for (int j = 0; primes[j] <= n / i; j ++) {
+            st[primes[j] * i] = true;
+
+            if (i % primes[j] == 0) break; // primes[j] 一定是 i 的最小质因子
+        }
+    }
+}
+
+int main () {
+    int n;
+
+    cin >> n;
+
+    get_primes(n);
+
+    cout << cnt << endl;
+
+    return 0;
+}
+```
+
+---
+
+#### 试除法求所有约数
+
+```cpp
+#include <iostream>
+#include <algorithm>
+#include <vector>
+
+using namespace std;
+
+vector<int> get_divisors (int n) {
+    vector<int> res;
+
+    for (int i = 1; i <= n / i; i ++) {
+        if (n % i == 0) {
+            res.push_back(i);
+
+            if (i != n / i) res.push_back(n / i);
+        }
+    }
+
+    sort(res.begin(), res.end());
+
+    return res;
+}
+
+
+int main () {
+    int n;
+
+    cin >> n;
+
+    while (n --) {
+        int x;
+
+        cin >> x;
+
+        auto res = get_divisors(x);
+
+        for (auto t : res) cout << t << " ";
+        cout << endl;
+    }
+
+    return 0;
+}
+```
+
+---
+
+#### 约数个数和约数之和
+
+```cpp
+
+```
+
+---
+
+### 组合计数
+
+### 高斯消元
+
+### 简单博弈论
