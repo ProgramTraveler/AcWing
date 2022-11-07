@@ -2322,7 +2322,127 @@ int main () {
 #### 约数个数和约数之和
 
 ```cpp
+#include <iostream>
+#include <algorithm>
+#include <unordered_map>
 
+using namespace std;
+
+typedef long long LL;
+
+const int mod = 1e9 + 7;
+
+int main () {
+    int n;
+
+    cin >> n;
+
+    unordered_map<int, int> primes;
+
+    while (n --) {
+        int x;
+
+        cin >> x;
+
+        for (int i = 2; i <= n / i; i ++) {
+            while (x % i == 0) {
+                x /= i;
+                primes[i] ++;
+            }
+        }
+
+        if (x > 1) primes[x] ++;
+    }
+
+    LL res = 1;
+
+    for (auto prime : primes) res = res * (prime.second + 1) % mod;
+
+    cout << res << endl;
+
+    return 0;
+}
+```
+
+---
+
+```cpp
+#include <iostream>
+#include <algorithm>
+#include <unordered_map>
+
+using namespace std;
+
+typedef long long LL;
+
+const int mod = 1e9 + 7;
+
+int main () {
+    int n;
+
+    cin >> n;
+
+    unordered_map<int, int> primes;
+
+    while (n --) {
+        int x;
+
+        cin >> x;
+
+        for (int i = 2; i <= n / i; i ++) {
+            while (x % i == 0) {
+                x /= i;
+                primes[i] ++;
+            }
+        }
+
+        if (x > 1) primes[x] ++;
+    }
+
+    LL res = 1;
+
+    for (auto prime : primes) { // 直接带入求和公式
+        int p = prime.first, a = prime.second;
+
+        LL t = 1;
+
+        while (a --) t = (t * p + 1) % mod;
+
+        res = res * t % mod;
+    }
+
+    cout << res << endl;
+
+    return 0;
+}
+```
+
+---
+
+#### 最大公约数 欧几里得算法(辗转相除法)
+
+```cpp
+#include <iostream>
+
+using namespace std;
+
+int gcd (int a, int b) { // 最大公约数模板
+    return b ? gcd(b, a % b) : a;
+}
+
+int main () {
+    int n;
+    scanf("%d", &n);
+
+    while (n --) {
+        int a, b;
+        scanf("%d%d", &a, &b);
+
+        printf("%d\n", gcd(a, b));
+    }
+
+    return 0;
+}
 ```
 
 ---
