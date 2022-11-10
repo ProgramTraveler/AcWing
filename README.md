@@ -2447,8 +2447,100 @@ int main () {
 
 ---
 
-### 组合计数
+## 第四章 数学知识(二)
 
-### 高斯消元
+### 欧拉函数
 
-### 简单博弈论
+```cpp
+#include <iostream>
+#include <algorithm>
+
+using namespace std;
+
+int main () {
+    int n;
+
+    cin >> n;
+
+    while (n --) {
+        int a; 
+        cin >> a;
+
+        int res = a;
+
+        for (int i = 2; i <= a / i; i ++)
+            if (a % i == 0) {
+                res = res / i * (i - 1);
+
+                while (a % i == 0) a /= i;
+            }
+        
+        if (a > 1) res = res / a * (a - 1);
+
+        cout << res << endl;
+    }
+
+    return 0;
+}
+```
+
+---
+
+### 筛法求欧拉函数
+
+```cpp
+#include <iostream>
+#include <algorithm>
+
+using namespace std;
+
+typedef long long LL;
+
+const int N = 1000010;
+
+int primes[N], cnt; // primes 存的是每一个质数 cnt 存的是质数的下标
+int phi[N];
+bool st[N]; // 哪些数被筛掉了
+
+LL get_eulers (int n) {
+    phi[1] = 1;
+
+    for (int i = 2; i <= n; i ++) {
+        if (!st[i]) {
+            primes[cnt ++] = i;
+
+            phi[i] = i - 1;
+        }
+
+        for (int j = 0; primes[j] <= n / i; j ++) {
+            st[primes[j] * i] = true;
+
+            if (i % primes[j] == 0) {
+                phi[primes[j] * i] = phi[i] * primes[j];
+
+                break;
+            }
+
+            phi[primes[j] * i] = phi[i] * (primes[j] - 1);
+        }
+    }
+
+    LL res = 0;
+
+    for (int i = 1; i <= n; i ++) res += phi[i];
+
+    return res;
+}
+
+int main () {
+    int n;
+
+    cin >> n;
+
+    cout << get_eulers(n) << endl;
+
+    return 0;
+}
+```
+
+---
