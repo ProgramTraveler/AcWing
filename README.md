@@ -3063,4 +3063,101 @@ int main () {
 
 ---
 
-### 
+### 博弈论
+
+#### Nim 游戏
+
+```cpp
+/*
+    先手必胜状态 -> 可以走到某一个必败状态
+    先手必败状态 -> 走不到任何一个必败状态
+*/
+
+#include <iostream>
+#include <algorithm>
+
+using namespace std;
+
+int main () {
+    int n;
+
+    int res = 0;
+
+    scanf("%d", &n);
+
+    while (n --) {
+        int x;
+
+        scanf("%d", &x);
+
+        res ^= x;
+    }
+
+    if (res) puts("Yes");
+    else puts("No");
+
+    return 0;
+}
+```
+
+---
+
+#### 集合 Nime 游戏
+
+```cpp
+#include <iostream>
+#include <algorithm>
+#include <cstring>
+#include <unordered_set>
+
+using namespace std;
+
+const int N = 110, M = 10010;
+
+int n, m;
+
+int s[N], f[M];
+
+int sg (int x) {
+    if (f[x] != -1) return f[x];
+
+    unordered_set<int> S;
+
+    for (int i = 0; i < m; i ++) {
+        int sum = s[i];
+
+        if (x >= sum) S.insert(sg(x - sum));
+    }
+
+    for (int i = 0; ; i ++) {
+        if (!S.count(i)) return f[x] = i;
+    }
+}
+
+int main () {
+    cin >> m;
+
+    for (int i = 0; i < m; i ++) cin >> s[i];
+
+    cin >> n;
+
+    memset(f, -1, sizeof f);
+
+    int res = 0;
+
+    for (int i = 0; i < n; i ++) {
+        int x;
+
+        cin >> x;
+
+        res ^= sg(x);
+    }
+
+    if (res) puts("Yes");
+    else puts("No");
+
+    return 0;
+}
+```
+
+---

@@ -29,6 +29,8 @@ int main () {
                     t = -1;
                     break;
                 }
+
+                t *= p[j];
             }
         }
 
