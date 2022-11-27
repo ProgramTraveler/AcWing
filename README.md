@@ -3479,3 +3479,170 @@ int main () {
 ```
 
 ---
+
+## 第五章 动态规划(二)
+
+### 线性dp
+
+#### 数字三角形
+
+```cpp
+#include <iostream>
+#include <algorithm>
+
+using namespace std;
+
+const int N = 510, INF = 1e9;
+
+int n;
+int a[N][N];
+int f[N][N];
+
+int main () {
+    scanf("%d", &n);
+
+    for (int i = 1; i <= n; i ++) {
+        for (int j = 1; j <= i; j ++) {
+            scanf("%d", &a[i][j]);
+        }
+    }
+
+    for (int i = 0; i <= n; i ++) {
+        for (int j = 0; j <= i; j ++) {
+            f[i][j] = -INF;
+        }
+    }
+
+    f[1][1] = a[1][1];
+
+    for (int i = 2; i <= n; i ++) {
+        for (int j = 1; j <= i; j ++) {
+            f[i][j] = max(f[i - 1][j - 1] + a[i][j], f[i - 1][j] + a[i][j]);
+        }
+    }
+
+    int res = -INF;
+
+    for (int i = 1; i <= n; i ++) res = max(res, f[n][i]);
+    
+    printf("%d\n", res);
+    
+    return 0;
+}
+```
+
+---
+
+#### 最长上升子序列
+
+```cpp
+#include <iostream>
+#include <algorithm>
+
+using namespace std;
+
+const int N = 1010;
+
+int n;
+int a[N], f[N];
+
+int main () {
+    scanf("%d", &n);
+
+    for (int i = 1; i <= n; i ++) scanf("%d", &a[i]);
+
+    for (int i = 1; i <= n; i ++) {
+        f[i] = 1; // 只有 a[i] 一个数
+
+        for (int j = 1; j < i; j ++) {
+            if (a[j] < a[i]) 
+                f[i] = max(f[i], f[j] + 1);
+        }
+    }
+
+    int res = 0;
+
+    for (int i = 1; i <= n; i ++) res = max(res, f[i]);
+
+    printf("%d\n", res);
+
+    return 0;
+}
+```
+
+---
+
+#### 最长公共子序列
+
+```cpp
+#include <iostream>
+#include <algorithm>
+
+using namespace std;
+
+const int N = 1010;
+
+int n, m;
+char a[N], b[N];
+int f[N][N];
+
+int main () {
+    scanf("%d%d", &n, &m);
+    scanf("%s%s", a + 1, b + 1);
+
+    for (int i = 1; i <= n; i ++) {
+        for (int j = 1; j <= m; j ++) {
+            f[i][j] = max(f[i - 1][j], f[i][j - 1]);
+
+            if (a[i] == b[j]) f[i][j] = max(f[i][j], f[i - 1][j - 1] + 1);
+        }
+    }
+
+    printf("%d\n", f[n][m]);
+
+    return 0;
+}
+```
+
+---
+
+### 区间dp
+
+#### 石子合并
+
+```cpp
+#include <iostream>
+#include <algorithm>
+
+using namespace std;
+
+const int N = 310;
+
+int n;
+int s[N];
+int f[N][N];
+
+int main () {
+    scanf("%d", &n);
+
+    for (int i = 1; i <= n; i ++) scanf("%d", &s[i]);
+
+    for (int i = 1; i <= n; i ++) s[i] += s[i + 1];
+
+    for (int len = 2; len <= n; len ++) {
+        for (int i = 1; i + len - 1 <= n; i ++) {
+            int l = i, r = i + len - 1;
+            f[l][r] = 1e8;
+            for (int k = 1; k < r; k ++) {
+                f[l][r] = min(f[l][r], f[l][k] + f[k + 1][r] + s[r] - s[l - 1]);
+            }
+        }
+    }
+
+    printf("%d\n", f[1][n]);
+
+    return 0;
+}
+```
+
+---
