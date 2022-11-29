@@ -3646,3 +3646,592 @@ int main () {
 ```
 
 ---
+
+## 第三章 动态规划(三)
+
+### 数位统计dp
+
+#### 计数问题
+
+```cpp
+#include <iostream>
+#include <algorithm>
+#include <vector>
+
+using namespace std;
+
+int get (vector<int> num. int l, int r) {
+    int res = 0;
+
+    for (int i = l; i >= r; i --) {
+        res = res * 10 + num[i];
+    }
+
+    return res;
+}
+
+int power10 (int x) { // 10 的 x 次方
+    int res = 1; 
+
+    while (x --) {
+        res *= 10;
+    }
+
+    return res;
+} 
+
+int count (int n, int x) {
+    if (!n) return 0;
+
+    vector<int> num;
+
+    while (n) {
+        num.push_back(n % 10);
+        n /= 10;
+    }
+
+    n = num.size();
+
+    int res = 0;
+
+    for (int i = n - 1 - !x; i >= 0; i ++) {
+        if (i < n - 1) {
+            res += get(num, n - 1, i + 1) * power10(i);
+            if (!x) res -= power10(i);
+        }
+
+        if (num[i] == x) res += get(num, i -1, 0) + 1;
+        else if (num[i] > x) res += power10(i);
+    }
+
+    return res;
+}
+
+int main () {
+    int a, b;
+
+    while (cin >> a >> b, a || b) {
+        if (a > b) swap(a, b);
+
+        for (int i = 0; i < 10; i ++) {
+            cout << count(b, i) - count(a - 1, i) << ' ';
+        }
+
+        cout << endl;
+    }
+
+    return 0;
+}
+```
+
+---
+
+### 状态压缩dp
+
+#### 蒙德里安的梦想
+
+```cpp
+#include <iostream>
+#include <algorithm>
+#include <cstring>
+
+using namespace std;
+
+const int N = 12, M = 1 << N;
+
+int n, m;
+long long f[N][M];
+bool st[M];
+
+int main () {
+    int n, m;
+
+    while (cin >> n >> m, n || m) {
+        memset(f, 0, sizeof f);
+
+        for (int i = 0; i < 1 << n; i ++) {
+            st[i] = true;
+
+            int cnt = 0; // 当前 0 的个数
+
+            for (int j = 0; j < n; j ++) {
+                if (i >> j & 1) {
+                    if (cnt & 1) st[i] = false;
+                    cnt = 0;
+                } else cnt ++;
+            }
+
+            if (cnt & 1) st[i] = false;
+        }
+
+        f[0][0] = 1;
+
+        for (int i = 1; i <= m; i ++) {
+            for (int j = 0; j < 1 << n; j ++) {
+                for (int k = 0; k < 1 << n; k ++) {
+                    if ((j & k) == 0 && st[j | k]) {
+                        f[i][j] += f[i - 1][k]; 
+                    }
+                }
+            }
+        }
+
+        cout << f[m][0] << endl;
+    }
+
+    return 0;
+}
+```
+
+---
+
+#### 最短 Hamilton 路径
+
+```cpp
+#include <iostream>
+#include <algorithm>
+#include <cstring>
+
+using namespace std;
+
+const int N = 20, M = 1 << N;
+
+int n;
+int w[N][N];
+int f[M][N];
+
+int main () {
+    cin >> n;
+
+    for (int i = 0; i < n; i ++) {
+        for (int j = 0; j < n; j ++) {
+            cin >> w[i][j];
+        }
+    }
+
+    memset(f, 0x3f, sizeof f);
+    f[1][0] = 0;
+
+    for (int i = 0; i < 1 << n; i ++) {
+        for (int j = 0; j < n; j ++) {
+            if (i >> j & 1) {
+                for (int k = 0; k < n; k ++) {
+                    if ((i - (1 << j)) >> k & 1) {
+                        f[i][j] = min(f[i][j], f[i - (1 << j)][k] + w[k][j]);
+                    }
+                }
+            }
+        }
+    }
+
+    cout << f[(1 << n) - 1][n - 1] << endl;
+
+    return 0;
+}
+```
+
+---
+
+### 树形dp
+
+#### 没有上司的舞会
+
+```cpp
+#include <iostream>
+#include <algorithm>
+#include <cstring>
+
+using namespace std;
+
+const int N = 6010;
+
+int n;
+int happy[N];
+int h[N], e[N], ne[N], idx;
+int f[N][2];
+bool has_father[N];
+
+void add (int a, int b) {
+    e[idx] = b, ne[idx] = h[a], h[a] = idx ++;
+}
+
+void dfs (int u) {
+    f[u][1] = happy[u];
+
+    for (int i = h[u]; i != -1; i = ne[i]) {
+        int j = e[i];
+
+        dfs(j);
+
+        f[u][0] += max(f[j][0], f[j][1]);
+        f[u][1] += f[j][0];
+    }
+}
+
+int main () {
+    scanf("%d", &n);
+
+    for (int i = 0; i < = n; i ++) scanf("%d", &happy[i]);
+
+    memset(h, -1, sizeof h);
+
+    for (int i = 0; i < n - 1; i ++) {
+        int a, b;
+
+        scanf("%d%d", &a, &b);
+
+        has_father[a] = true;
+        add(b, a);
+    }
+
+    int root = 1;
+
+    while (has_father[root]) root ++;
+
+    dfs(root);
+
+    printf("%d\n", max(f[root][0], f[root][1]));
+
+    return 0;
+}
+```
+
+---
+
+### 记忆化搜索
+
+#### 滑雪
+
+```cpp
+#include <iostream>
+#include <algorithm>
+#include <cstring>
+
+using namespace std;
+
+const int N = 310;
+
+int n, m;
+int h[N][N];
+int f[N][N];
+
+int dx[4] = {-1, 0, 1, 0}, dy[4] = {0, 1, 0, -1};
+
+int dp (int x, int y) {
+    int &v = f[x][y];
+
+    if (v != -1) return v;
+
+    v = 1;
+
+    for (int i = 0; i < 4; i ++) {
+        int a = x + dx[i], b = y + dy[i];
+
+        if (a >= 1 && a <= n && b >= 1 && b <= m && h[a][b] < h[x][y]) {
+            v = max(v, dp(a, b) + 1);
+        }
+    }
+
+    return v;
+}
+
+int main () {
+    scanf("%d%d", &n, &m);
+
+    for (int i = 1; i <= n; i ++) {
+        for (int j = 1; j <= m; j ++) {
+            scanf("%d", &h[i][j]);
+        }
+    }
+
+    memset(f, -1, sizeof f);
+
+    int res = 0;
+
+    for (int i = 1; i <= n; i ++) {
+        for (int j = 1; j <= m; j ++) {
+            res = max(res, dp(i, j));
+        }
+    }
+
+    printf("%d\n", res);
+
+    return 0;
+}
+```
+
+---
+
+## 第六章 贪心算法(一)
+
+### 区间问题
+
+#### 区间选点
+
+```cpp
+#include <iostream>
+#include <algorithm>
+
+using namespace std;
+
+const int N = 100010;
+
+int n;
+
+struct Range {
+    int l, r;
+
+    bool operator<const Range &w> const {
+        return r < w.r;
+    }
+}rang[N];
+
+int main () {
+    scanf("%d", &n);
+
+    for (int i = 0; i < n; i ++) {
+        int l, r;
+
+        scanf("%d%d", &l, &r);
+        range[i] = {l, r};
+    }
+
+    sort(range, range + n);
+
+    int res = 0, ed = -2e9;
+
+    for (int i = 0; i < n; i ++) {
+        if (range[i].l > ed) {
+            res ++;
+            ed = range[i].r;
+        }
+    }
+
+    printf("%d\n", res);
+
+    return 0;
+}
+```
+
+---
+
+#### 最大不相交区间数量
+
+```cpp
+#include <iostream>
+#include <algorithm>
+
+using namespace std;
+
+const int N = 100010;
+
+int n;
+
+struct Range {
+    int l, r;
+
+    bool operator<(const Range &w)> const {
+        return r < w.r;
+    }
+}range[N];
+
+int main () {
+    scanf("%d", &n);
+
+    for (int i = 0; i < n; i ++) {
+        int l, r;
+        scanf("%d%d", &l, &r);
+
+        range[i] = {l, r};
+    }
+    
+    sort(range, range + n);
+
+    int res = 0, ed = -2e9;
+
+    for (int i = 0; i < n; i ++) {
+        if (ed < range[i].l) {
+            res ++;
+
+            ed = range[i].r;
+        }
+    }
+
+    printf("%d\n", res);
+
+    return 0;
+}
+```
+
+---
+
+#### 区间分组
+
+```cpp
+#include <iostream>
+#include <algorithm>
+#include <queue>
+
+using namespace std;
+
+const int N = 100010;
+
+int n;
+struct Range {
+    int l, r;
+    bool operator<(const Range &w)> const {
+        return l < w.l;
+    }
+}range[N];
+
+int main () {
+    scanf("%d", &n);
+
+    for (int i = 0; i < n; i ++) {
+        int l, r;
+
+        scanf("%d%d", &l, &r);
+        range[i] = {l, r};
+    }
+
+    sort(range, range + n);
+
+    priority_queue<int, vector<int>, greater<int>> heap;
+
+    for (int i = 0; i < n; i ++) {
+        auto r = range[i];
+
+        if (heap.empty || heap.top() >= r.l) heap.push(r.r);
+        else {
+            int t = heap.top();
+
+            heap.pop();
+            heap.push(r.r);
+        } 
+    }
+
+    printf("%d\n", heap.size());
+
+    return 0;
+
+}
+```
+
+---
+
+#### 区间覆盖
+
+```cpp
+#include <iostream>
+#include <algorithm>
+
+using namespace std;
+
+const int N = 100010;
+
+int n;
+
+struct Range {
+    int l, r;
+    bool operator < (const Range &w) const {
+        return l < w.l;
+    }
+}range[N];
+
+int main () {
+    int st, ed;
+    scanf("%d%d", &st, &ed);
+
+    scanf("%d", &n);
+
+    for (int i = 0; i < n; i ++) {
+        int l, r;
+
+        scanf("%d%d", &l, &r);
+
+        rang[i] = {l, r};
+    }
+
+    sort(range, range + n);
+
+    int res =  0;
+    bool success = false;
+
+    for (int i = 0; i < n; i ++) {
+        int j  = i, r = -2e9;
+        while (j < n && range[j].l <= st) {
+            r = max(r, range[j].r);
+            j ++;
+        }
+        if (r < st) {
+            res = -1;
+            break;
+        }
+
+        res ++;
+
+        if (r >= ed) {
+            success = true;
+
+            break;
+        }
+        
+        st = r;
+        i = j - 1;
+    }
+
+    if (!success) res = -1;
+
+    printf("%d\n", res);
+
+    return 0;
+}
+```
+
+---
+
+### Huffman 树
+
+#### 合并果子
+
+```cpp
+#include <iostream>
+#include <algorithm>
+#include <queue>
+
+using namespace std;
+
+int main () {
+    int n;
+
+    scanf("%d", &n);
+
+    priority_queue<int, vector<int>, greater<int>> heap;
+
+    while (n --) {
+        int x;
+        scanf("%d", &x);
+
+        heap.push(x);
+    }
+
+    int res = 0;
+
+    while (heap.size() > 1) {
+        int a = heap.top(); heap.pop();
+
+        int b = heap.top(); heap.pop();
+
+        res += a + b;
+        heap.push(a + b);
+
+
+    }
+
+    printf("%d\n", res);
+
+    return 0;
+}
+```
+
+---
