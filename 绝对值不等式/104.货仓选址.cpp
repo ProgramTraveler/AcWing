@@ -15,5 +15,11 @@ int main () {
 
     sort(a, a + n); 
 
+    int res = 0;
+
+    for (int i = 0; i < n; i ++) res += abs(a[i] - a[n / 2]);
+
+    printf("%d\n", res);
+
     return 0;
 }
