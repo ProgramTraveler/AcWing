@@ -24,7 +24,7 @@ vector<int> sub(vector<int> &A, vector<int> &B) {
         else t = 0;
     }
 
-    while (C.size() > 1 && C.back() == 0) C.pop_back(); //去掉前导零
+    while (C.size() > 1 && C.back() == 0) C.pop_back(); // 去掉前导零
     return C;
 }
 
